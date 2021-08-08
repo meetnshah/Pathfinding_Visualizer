@@ -1,6 +1,7 @@
 import React,{useState, useEffect} from  "react";
 import Node from "./Node";
 import "./Pathfind.css";
+import aStar from "../a-star/aStar";
 const cols = 25;
 const rows = 10;
 
@@ -11,7 +12,7 @@ const NODE_END_COLS = cols - 1;
 
 const Pathfind = () =>{
     const [Grid, setGrid] = useState([]);
-
+    const[Path, setPath] = useState([]);
     useEffect(() => {
         initializeGrid();},[]);
     // GRID
@@ -26,6 +27,12 @@ const Pathfind = () =>{
 
         setGrid(grid);
 
+        addNeighbors(grid);
+
+        const startNode = grid[NODE_START_ROW][NODE_START_COLS];
+        const endNode = grid[NODE_END_ROW][NODE_END_COLS];
+        let path = aStar(startNode, endNode);
+        setPath(path);
     };
         const createSpot =(grid) => { 
             for(let i = 0; i< rows; i++){
@@ -36,6 +43,16 @@ const Pathfind = () =>{
         }
 
     };
+
+    // Adding neighbors
+    const addNeighbors = (grid) => {
+        for(let i=0;i<rows;i++){
+            
+            for(let j = 0; j<cols;j++){
+                grid[i][j].addneighbors(grid)
+            }
+        }
+    }
     // Spot constructor
     function Spot(i,j){
         this.x = i;
@@ -45,6 +62,19 @@ const Pathfind = () =>{
         this.g = 0;
         this.f = 0;
         this.h = 0;
+        this.neighbors = [];
+        this.previous = undefined;
+        this.addneighbors = function(grid)
+        {
+            let  i = this.x;
+            let  j = this.y;
+            if (i>0) this.neighbors.push(grid[i-1][j]);
+            if(i<rows-1) this.neighbors.push(grid[i+1][j]);
+            if (j>0) this.neighbors.push(grid[i][j-1]);
+            if(j<cols-1) this.neighbors.push(grid[i][j+1]);
+
+        }
+
     }
 
         // Grid with Node
@@ -63,6 +93,7 @@ const Pathfind = () =>{
                 })}
                 </div>
         );
+        console.log(Path);
     return(
     <div className = "Wrapper">
             <h1>Pathfind Component</h1>
