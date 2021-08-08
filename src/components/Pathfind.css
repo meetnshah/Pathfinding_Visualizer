@@ -1,0 +1,7 @@
+.Wrapper{
+    max-width: 90%;
+    margin: auto;
+}
+.rowWrapper{
+    display: flex;
+}
