@@ -2,7 +2,7 @@ import React,{useState, useEffect} from  "react";
 import Node from "./Node";
 import "./Pathfind.css";
 import aStar from "../a-star/aStar";
-const cols = 25;
+const cols = 20;
 const rows = 10;
 
 const NODE_START_ROW = 0;
@@ -13,6 +13,8 @@ const NODE_END_COLS = cols - 1;
 const Pathfind = () =>{
     const [Grid, setGrid] = useState([]);
     const[Path, setPath] = useState([]);
+    const[VisitedNodes, setVisitedNodes] = useState([]);
+    
     useEffect(() => {
         initializeGrid();},[]);
     // GRID
@@ -32,7 +34,8 @@ const Pathfind = () =>{
         const startNode = grid[NODE_START_ROW][NODE_START_COLS];
         const endNode = grid[NODE_END_ROW][NODE_END_COLS];
         let path = aStar(startNode, endNode);
-        setPath(path);
+        setPath(path.path);
+        setVisitedNodes(path.visitedNodes);
     };
         const createSpot =(grid) => { 
             for(let i = 0; i< rows; i++){
@@ -93,9 +96,34 @@ const Pathfind = () =>{
                 })}
                 </div>
         );
+        const visualizeShortestPath = (shortestPathNode) => {
+            for(let i = 0; i< shortestPathNode.length; i++){
+                setTimeout(() => {
+                    const node = shortestPathNode[i];
+                    document.getElementById(`node-${node.x}-${node.y}`).className = "node node-shortest-path"
+                },10*i);
+            }
+        };
+
+        const visualizePath = () => {for(let i = 0; i<= VisitedNodes.length; i++){
+            
+            if(i === VisitedNodes.length){
+                setTimeout(() => {
+                    visualizeShortestPath(Path);
+                },20*i);
+            }
+            // For delay
+            else{
+                setTimeout(() => {
+                const node = VisitedNodes[i];
+                    document.getElementById(`node-${node.x}-${node.y}`).className = "node node-visited"},20*i);
+            }
+        } 
+        };
         console.log(Path);
     return(
     <div className = "Wrapper">
+        <button onClick = {visualizePath}>Visualize Path</button>
             <h1>Pathfind Component</h1>
             {gridwithNode}
         </div>
